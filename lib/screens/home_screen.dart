@@ -183,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Text(
-              " Nerds",
+              " Live",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 30,

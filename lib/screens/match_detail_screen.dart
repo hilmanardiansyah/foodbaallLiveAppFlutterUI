@@ -20,7 +20,95 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
     {"label": "H2H"},
     {"label": "Table"},
   ];
+
   int selectedIndex = 0;
+
+  //  State-based content untuk tab
+  Widget _buildTabContent() {
+    if (selectedIndex == 0) {
+      return Column(
+        children: [
+          LiveMatchStats(
+            homeStats: widget.liveMatch.shotOnTarget,
+            awayStats: widget.liveMatch.shotOnTarget * 2,
+            title: "Shots  On Target",
+            homeValue: widget.liveMatch.shotOnTarget.toDouble() / 10,
+            awayValue: widget.liveMatch.shotOnTarget.toDouble() * 2 / 10,
+            isHomeWinner: false,
+          ),
+          LiveMatchStats(
+            homeStats: widget.liveMatch.homeGoal,
+            awayStats: widget.liveMatch.awayGoal,
+            title: "Goals",
+            homeValue: widget.liveMatch.homeGoal.toDouble() / 5,
+            awayValue: widget.liveMatch.awayGoal.toDouble() * 2 / 5,
+            isHomeWinner: true,
+          ),
+          LiveMatchStats(
+            homeStats: widget.liveMatch.possession,
+            awayStats: 100 - widget.liveMatch.possession,
+            title: "Possession",
+            homeValue: widget.liveMatch.possession.toDouble() * 1.1 / 100,
+            awayValue: widget.liveMatch.possession.toDouble() / 100,
+            isHomeWinner: true,
+          ),
+          LiveMatchStats(
+            homeStats: widget.liveMatch.yelloCard,
+            awayStats: widget.liveMatch.yelloCard + 1,
+            title: "Yellow Cards",
+            homeValue: widget.liveMatch.yelloCard.toDouble() / 10,
+            awayValue: widget.liveMatch.yelloCard.toDouble() * 2 / 10,
+            isHomeWinner: false,
+          ),
+          LiveMatchStats(
+            homeStats: widget.liveMatch.redCard - 1,
+            awayStats: widget.liveMatch.redCard,
+            title: "Red Cards",
+            homeValue: widget.liveMatch.redCard.toDouble() / 10,
+            awayValue: widget.liveMatch.redCard.toDouble() * 2 / 10,
+            isHomeWinner: false,
+          ),
+          LiveMatchStats(
+            homeStats: widget.liveMatch.corner,
+            awayStats: widget.liveMatch.corner - 1,
+            title: "Corner Kicks",
+            homeValue: widget.liveMatch.redCard.toDouble() / 5,
+            awayValue: widget.liveMatch.redCard.toDouble() / 5,
+            isHomeWinner: true,
+          ),
+        ],
+      );
+    } else if (selectedIndex == 1) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 40),
+        child: Center(
+          child: Text(
+            "H2H data coming soon...",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      );
+    } else {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 40),
+        child: Center(
+          child: Text(
+            "Table data coming soon...",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,86 +131,48 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
               ),
               child: Column(
                 children: [
+                  // Tabs sekarang pakai GestureDetector + setState
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(tabs.length, (index) {
                       final tab = tabs[index];
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: selectedIndex == index
-                              ? kprimarycolor
-                              : detailBackgroundColor,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        margin: const EdgeInsets.only(right: 10),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
-                        ),
-                        child: Text(
-                          tab["label"],
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: selectedIndex == index
-                                ? Colors.white
-                                : Colors.grey,
+                      final bool isActive = selectedIndex == index;
+
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedIndex = index;
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isActive
+                                ? kprimarycolor
+                                : detailBackgroundColor,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          margin: const EdgeInsets.only(right: 10),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
+                          child: Text(
+                            tab["label"],
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: isActive ? Colors.white : Colors.grey,
+                            ),
                           ),
                         ),
                       );
                     }),
                   ),
+
                   const SizedBox(height: 20),
-                  LiveMatchStats(
-                    homeStats: widget.liveMatch.shotOnTarget,
-                    awayStats: widget.liveMatch.shotOnTarget * 2,
-                    title: "Shots  On Target",
-                    homeValue: widget.liveMatch.shotOnTarget.toDouble() / 10,
-                    awayValue:
-                        widget.liveMatch.shotOnTarget.toDouble() * 2 / 10,
-                    isHomeWinner: false,
-                  ),
-                  LiveMatchStats(
-                    homeStats: widget.liveMatch.homeGoal,
-                    awayStats: widget.liveMatch.awayGoal,
-                    title: "Goals",
-                    homeValue: widget.liveMatch.homeGoal.toDouble() / 5,
-                    awayValue: widget.liveMatch.awayGoal.toDouble() * 2 / 5,
-                    isHomeWinner: true,
-                  ),
-                  LiveMatchStats(
-                    homeStats: widget.liveMatch.possession,
-                    awayStats: 100 - widget.liveMatch.possession,
-                    title: "Possession",
-                    homeValue:
-                        widget.liveMatch.possession.toDouble() * 1.1 / 100,
-                    awayValue: widget.liveMatch.possession.toDouble() / 100,
-                    isHomeWinner: true,
-                  ),
-                  LiveMatchStats(
-                    homeStats: widget.liveMatch.yelloCard,
-                    awayStats: widget.liveMatch.yelloCard + 1,
-                    title: "Yellow Cards",
-                    homeValue: widget.liveMatch.yelloCard.toDouble() / 10,
-                    awayValue: widget.liveMatch.yelloCard.toDouble() * 2 / 10,
-                    isHomeWinner: false,
-                  ),
-                  LiveMatchStats(
-                    homeStats: widget.liveMatch.redCard - 1,
-                    awayStats: widget.liveMatch.redCard,
-                    title: "Red Cards",
-                    homeValue: widget.liveMatch.redCard.toDouble() / 10,
-                    awayValue: widget.liveMatch.redCard.toDouble() * 2 / 10,
-                    isHomeWinner: false,
-                  ),
-                  LiveMatchStats(
-                    homeStats: widget.liveMatch.corner,
-                    awayStats: widget.liveMatch.corner - 1,
-                    title: "Corner Kicks",
-                    homeValue: widget.liveMatch.redCard.toDouble() / 5,
-                    awayValue: widget.liveMatch.redCard.toDouble() / 5,
-                    isHomeWinner: true,
-                  ),
+
+                  //  Konten berubah sesuai state selectedIndex
+                  _buildTabContent(),
                 ],
               ),
             ),

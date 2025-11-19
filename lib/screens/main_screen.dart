@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:foodball_app/const.dart';
 import 'package:foodball_app/screens/home_screen.dart';
+import 'package:foodball_app/screens/calender_screen.dart';
+import 'package:foodball_app/screens/standing_screen.dart';
+import 'package:foodball_app/screens/account_screen.dart';
 import 'package:iconsax/iconsax.dart';
 
 class AppMainScreen extends StatefulWidget {
@@ -14,9 +17,9 @@ class _AppMainScreenState extends State<AppMainScreen> {
   int currentTab = 0;
   final List<Widget> screens = [
     const HomeScreen(),
-    const Scaffold(),
-    const Scaffold(),
-    const Scaffold(),
+    const CalendarScreen(),
+    const StandingScreen(),
+    const AccountScreen(),
   ];
   final icons = [
     Iconsax.home,
