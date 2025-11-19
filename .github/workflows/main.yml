@@ -7,6 +7,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    # 👇 Tambahan penting: semua perintah dijalankan di folder foodball_app
+    defaults:
+      run:
+        working-directory: foodball_app
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
