@@ -3,8 +3,8 @@ import 'package:foodball_app/const.dart';
 import 'package:foodball_app/screens/home_screen.dart';
 import 'package:foodball_app/screens/calender_screen.dart';
 import 'package:foodball_app/screens/standing_screen.dart';
-import 'package:foodball_app/screens/account_screen.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:foodball_app/screens/favorites_screen.dart';
 
 class AppMainScreen extends StatefulWidget {
   const AppMainScreen({super.key});
@@ -19,7 +19,7 @@ class _AppMainScreenState extends State<AppMainScreen> {
     const HomeScreen(),
     const CalendarScreen(),
     const StandingScreen(),
-    const AccountScreen(),
+    const FavoritesScreen(),
   ];
   final icons = [
     Iconsax.home,

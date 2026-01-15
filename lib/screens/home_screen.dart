@@ -1,58 +1,58 @@
-// ...existing code...
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:foodball_app/const.dart';
-import 'package:foodball_app/Model/live_match_model.dart';
-import 'package:foodball_app/Model/up_coming_model.dart';
-import 'package:foodball_app/screens/match_detail_screen.dart';
-import 'package:foodball_app/Widgets/live_match.dart';
-import 'package:foodball_app/Widgets/up_coming_match.dart';
 
-class HomeScreen extends StatefulWidget {
+import 'package:foodball_app/const.dart';
+import 'package:foodball_app/state/providers.dart';
+import 'package:foodball_app/Widgets/live_match_api.dart';
+import 'package:foodball_app/Widgets/upcoming_match_api.dart';
+import 'package:foodball_app/screens/upcoming_all_screen.dart';
+
+
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final liveAsync = ref.watch(liveMatchesProvider);
+    final upcomingAsync = ref.watch(upcomingMatchesProvider);
 
-class _HomeScreenState extends State<HomeScreen> {
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: headerParts(),
       body: Column(
         children: [
           liveMatchText(),
+
+          // ======= LIVE (horizontal) =======
           SizedBox(
             height: 230,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: liveMatches.length,
-              shrinkWrap: true,
-              padding: const EdgeInsets.only(left: 20),
-              itemBuilder: (context, index) {
-                final live = liveMatches[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => MatchDetailScreen(liveMatch: live),
-                      ),
-                    );
+            child: liveAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text("Error live: $e")),
+              data: (matches) {
+                if (matches.isEmpty) {
+                  return const Center(child: Text("No live matches right now"));
+                }
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: matches.length,
+                  padding: const EdgeInsets.only(left: 20),
+                  itemBuilder: (context, index) {
+                    final m = matches[index];
+                    return LiveMatchCardApi(match: m);
                   },
-                  child: LiveMatchData(live: live),
                 );
               },
             ),
           ),
 
+          // ======= UPCOMING header =======
           Padding(
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                Text(
+                const Text(
                   "Upcoming Matches",
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
@@ -64,8 +64,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 const Spacer(),
                 TextButton(
                   style: TextButton.styleFrom(foregroundColor: kprimarycolor),
-                  onPressed: () {},
-                  child: Text(
+                  onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const UpcomingAllScreen()),
+                  );
+                },
+                  child: const Text(
                     "See All",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
@@ -73,17 +78,21 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
+
+          // ======= UPCOMING (vertical) =======
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: ListView.builder(
-                itemCount: upcomingMatches.length,
-                physics: const AlwaysScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  final upMatch = upcomingMatches[index];
-                  return UpComingMatches(upMatch: upMatch);
-                },
+              child: upcomingAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Center(child: Text("Error upcoming: $e")),
+                data: (matches) => ListView.builder(
+                  itemCount: matches.length,
+                  itemBuilder: (context, index) {
+                    final m = matches[index];
+                    return UpcomingMatchTileApi(match: m);
+                  },
+                ),
               ),
             ),
           ),
@@ -165,32 +174,10 @@ class _HomeScreenState extends State<HomeScreen> {
         const Spacer(),
         const Row(
           children: [
-            Text(
-              "S",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 35,
-                letterSpacing: -2,
-              ),
-            ),
+            Text("S", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35, letterSpacing: -2)),
             Icon(Icons.sports_soccer, color: kprimarycolor, size: 25),
-            Text(
-              "ccer",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 30,
-                letterSpacing: -2,
-              ),
-            ),
-            Text(
-              " Live",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 30,
-                color: kprimarycolor,
-                letterSpacing: -2,
-              ),
-            ),
+            Text("ccer", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30, letterSpacing: -2)),
+            Text(" Live", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30, color: kprimarycolor, letterSpacing: -2)),
           ],
         ),
         const Spacer(),
@@ -211,10 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Positioned(
                     right: 4,
                     top: 0,
-                    child: CircleAvatar(
-                      radius: 5,
-                      backgroundColor: kprimarycolor,
-                    ),
+                    child: CircleAvatar(radius: 5, backgroundColor: kprimarycolor),
                   ),
                 ],
               ),
